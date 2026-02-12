@@ -427,13 +427,13 @@ function safeHaptic(type) { try { if (tg && tg.HapticFeedback) tg.HapticFeedback
 
 function addHistory(text, val) { const color = val.includes('+') ? '#4CAF50' : '#ff4d4d'; user.history.unshift({ text, val, color }); if(user.history.length > 30) user.history.pop(); renderHistory(); }
 
-// --- FIXED UPDATE UI FUNCTION ---
+// --- FIXED UPDATE UI FUNCTION (Safe Checks) ---
 function updateUI() { 
-    // Безопасное обновление элементов. Если элемента нет в HTML, код просто пропустит его.
+    // Безопасное обновление элементов. Если элемента нет, код не упадет.
     const balEl = document.getElementById('user-balance');
     if(balEl) balEl.innerText = Math.floor(user.balance).toLocaleString(); 
     
-    // Вот здесь была ошибка (header-name нет в index.html), добавили проверку
+    // Проверка на существование header-name, чтобы не падала ошибка
     const nameEl = document.getElementById('header-name');
     if(nameEl) nameEl.innerText = user.gameNick || user.name; 
 
@@ -553,7 +553,14 @@ function switchTab(id) { document.querySelectorAll('.section').forEach(e=>e.clas
 function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id === 'modal-preview') { if(countdownInterval) clearInterval(countdownInterval); } }
 function saveSettings() { const nick = document.getElementById('setting-nick').value; const srv = document.getElementById('setting-server').value; const bank = document.getElementById('setting-bank').value; if(nick) user.gameNick = nick; if(srv) user.gameServer = srv; if(bank) user.bankAccount = bank; saveUser(); updateUI(); showNotify("Настройки сохранены", "success"); closeModal('modal-profile'); }
 function renderHistory() { const hList = document.getElementById('history-list'); if(!hList) return; hList.innerHTML = ''; user.history.forEach(h => { hList.innerHTML += `<div><span>${h.text}</span><span style="color:${h.color}">${h.val}</span></div>`; }); }
-function openProfileModal() { document.getElementById('setting-nick').value = user.gameNick; document.getElementById('setting-server').value = user.gameServer; document.getElementById('setting-bank').value = user.bankAccount; renderHistory(); document.getElementById('modal-profile').style.display = 'flex'; }
+function openProfileModal() { 
+    document.getElementById('setting-nick').value = user.gameNick; 
+    document.getElementById('setting-server').value = user.gameServer; 
+    document.getElementById('setting-bank').value = user.bankAccount; 
+    renderHistory(); 
+    renderReferralStats(); // Теперь вызывается при открытии профиля
+    document.getElementById('modal-profile').style.display = 'flex'; 
+}
 async function activatePromo() { showNotify("Проверка подписки...", "info"); const isSub = await checkGlobalSubscription(); if(!PROMO_CODES || PROMO_CODES.length === 0) { showNotify("Промокоды не загружены", "error"); return; } if(!isSub) return showNotify("Сначала подпишитесь на канал!", "error"); const codeInput = document.getElementById('promo-input'); const code = codeInput.value.trim(); if(!code) return; const p = PROMO_CODES.find(x => x.code === code); if(p) { if(p.limit && user.activatedPromos.includes(code)) return showNotify("Уже использован", "error"); user.balance = Number(user.balance) + Number(p.val); if(p.limit) user.activatedPromos.push(code); addHistory(`Промо: ${code}`, `+${p.val}`); saveUser(); updateUI(); showNotify(`Промокод активирован: +${p.val} ₽`, 'success'); codeInput.value = ""; } else showNotify("Неверный код", "error"); }
 function payCustomAmount() { const val = parseInt(document.getElementById('custom-amount').value); initYooPayment(val); }
 function openUpgradeSelector() { const list = document.getElementById('upg-select-grid'); list.innerHTML = ''; if(user.inventory.length === 0) return showNotify("Инвентарь пуст", "error"); user.inventory.forEach((item, idx) => { list.innerHTML += `<div class="upg-item-row rarity-${item.rarity}"><div class="upg-row-left"><img src="${item.img}" class="upg-row-img"><div class="upg-row-info"><div class="upg-row-name">${item.name}</div><div class="upg-row-price">${item.price} ₽</div></div></div><button class="btn-upg-select" onclick="selectUpgradeSource(${idx})">ВЫБРАТЬ</button></div>`; }); document.getElementById('modal-upg-select').style.display = 'flex'; }

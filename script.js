@@ -35,7 +35,10 @@ function getVirtPrice(rub) { return (rub * VIRT_RATE).toLocaleString() + ' Ви�
 const RARITY_VALS = { 'consumer': 1, 'common': 2, 'rare': 3, 'epic': 4, 'legendary': 5, 'mythical': 6 };
 const RARITY_COLORS = { 'consumer': '#B0B0B0', 'common': '#4CAF50', 'rare': '#3b82f6', 'epic': '#a855f7', 'legendary': '#eab308', 'mythical': '#ff3333' };
 
-// Сюда вставлять данные из админки (GAME_CONFIG и PROMO_CODES)
+/* ==============================================
+   КОНФИГУРАЦИЯ (ВСТАВИТЬ ЭТО В НАЧАЛО SCRIPT.JS)
+   ============================================== */
+const GAME_CONFIG = [
     {
         "id": "sub_case_1",
         "name": "Раз в ДВА ДНЯ! (За подписку)",
@@ -1408,7 +1411,7 @@ const RARITY_COLORS = { 'consumer': '#B0B0B0', 'common': '#4CAF50', 'rare': '#3b
             {
                 "name": "Cadilac Escalade",
                 "price": 1799,
-                "img": "img/Cescalade.png",
+                "img": "img/cEscalade.png",
                 "rarity": "epic"
             },
             {
@@ -1444,7 +1447,7 @@ const RARITY_COLORS = { 'consumer': '#B0B0B0', 'common': '#4CAF50', 'rare': '#3b
             {
                 "name": "Nissan Rathfinder 2022",
                 "price": 1055,
-                "img": "img/pathfinder.png",
+                "img": "img/Pathfinder.png",
                 "rarity": "rare"
             },
             {
@@ -1617,18 +1620,59 @@ const RARITY_COLORS = { 'consumer': '#B0B0B0', 'common': '#4CAF50', 'rare': '#3b
     }
 ];
 
-        const DEFAULT_PROMO_CODES = [
-            { "code": "ADMINKAADMINKAADMINKA", "val": 1000, "limit": 0 },
-            { "code": "BRCASES", "val": 50, "limit": 1 },
-            { "code": "KOLBASENKO", "val": 15, "limit": 1 },
-            { "code": "VIBE", "val": 10, "limit": 1 },
-            { "code": "BAN", "val": 5, "limit": 1 },
-            { "code": "FREE", "val": 20, "limit": 1 },
-            { "code": "BLACK", "val": 12, "limit": 1 },
-            { "code": "14FEB", "val": 14, "limit": 1 },
-            { "code": "YOUTUBE", "val": 9, "limit": 1 },
-            { "code": "TIKTOK", "val": 9, "limit": 1 }
-        ];
+const PROMO_CODES = [
+    {
+        "code": "ADMINKAADMINKAADMINKA",
+        "val": 1000,
+        "limit": 0
+    },
+    {
+        "code": "BRCASES",
+        "val": 50,
+        "limit": 1
+    },
+    {
+        "code": "KOLBASENKO",
+        "val": 15,
+        "limit": 1
+    },
+    {
+        "code": "VIBE",
+        "val": 10,
+        "limit": 1
+    },
+    {
+        "code": "BAN",
+        "val": 5,
+        "limit": 1
+    },
+    {
+        "code": "FREE",
+        "val": 20,
+        "limit": 1
+    },
+    {
+        "code": "BLACK",
+        "val": 12,
+        "limit": 1
+    },
+    {
+        "code": "14FEB",
+        "val": 14,
+        "limit": 1
+    },
+    {
+        "code": "YOUTUBE",
+        "val": 9,
+        "limit": 1
+    },
+    {
+        "code": "TIKTOK",
+        "val": 9,
+        "limit": 1
+    }
+];
+
 
 const DEFAULT_USER = { 
     balance: 0, inventory: [], uid: 0, name: "Гость", tgUsername: "", gameNick: "", 

@@ -15,9 +15,13 @@
     <div class="bg-glow bg-glow-2"></div>
 
     <div class="live-feed-strip">
-        <div class="live-feed-track" id="live-feed-track">
-            <div class="live-item-placeholder">Ожидание дропов...</div>
+        <div class="live-feed-overlay"></div> <div class="live-feed-track" id="live-feed-track">
+            <div class="live-item-placeholder">
+                <span class="loader-dot"></span> Ожидание дропов...
+            </div>
         </div>
+        <div class="live-fade-left"></div>
+        <div class="live-fade-right"></div>
     </div>
 
     <div id="loading-screen" style="position:fixed; inset:0; background:#09090b; z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;">

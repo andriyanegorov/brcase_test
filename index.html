@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Black Russia Cases</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div id="blur-container">
+        <header>
+            <div class="brand-box">
+                <img src="img/logo.png" alt="Logo" class="brand-logo-img" onerror="this.src='https://placehold.co/100x100/1a1a1a/ffffff?text=Logo'">
+                <div class="brand-info">
+                    <span class="brand-main">BLACK RUSSIA</span>
+                    <span class="brand-sub">CASES</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="balance-glass" onclick="switchTab('shop')">
+                    <span id="user-balance">0</span> ₽
+                    <div class="btn-add-balance">+</div>
+                </div>
+                
+                <div class="profile-btn" onclick="openProfileModal()">
+                    <img id="header-avatar" src="img/avatar_placeholder.png" alt="Profile" onerror="this.src='https://placehold.co/100x100/1a1a1a/ffffff?text=User'">
+                </div>
+            </div>
+
+            <span id="header-name" style="display:none;"></span>
+            <span id="header-uid" style="display:none;"></span>
+        </header>
+
+        <main>
+            <div id="tab-cases" class="section active">
+                <div class="hero-section">
+                    <h1>Black Russia Cases</h1>
+                    <p>Лучший проект по кейсам Black Russia</p>
+                </div>
+
+                <div class="section-divider"><span>БЕСПЛАТНО</span></div>
+                <div class="cases-grid" id="cases-free"></div>
+
+                <div class="section-divider"><span>ГЛАВНОЕ</span></div>
+                <div class="cases-grid" id="cases-default"></div>
+
+                <div class="section-divider"><span>НАБОРЫ</span></div>
+                <div class="cases-grid" id="cases-bundles"></div>
+
+                <div class="section-divider"><span>РИСК</span></div>
+                <div class="cases-grid" id="cases-risk"></div>
+
+                <div class="section-divider"><span>КОНТЕЙНЕРЫ</span></div>
+                <div class="cases-grid" id="containers"></div>
+
+                <div class="info-card warning">
+                    <div class="info-icon">⚠️</div>
+                    <div class="info-text">
+                        Вывод предметов осуществляется в виртах.<br>
+                        <b>Курс: 1₽ = 10,000 Вирт</b>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-upgrade" class="section">
+                <div class="hero-section small">
+                    <h1>Апгрейд</h1>
+                    <p>Повышай ставки</p>
+                </div>
+
+                <div class="upgrade-wrapper">
+                    <div class="upgrade-slots-row">
+                        <div class="upg-card glass-panel" id="upg-source-slot" onclick="openUpgradeSelector()">
+                            <div class="upg-card-header">ТВОЙ ПРЕДМЕТ</div>
+                            <div class="upg-card-body">
+                                <div class="placeholder-icon">+</div>
+                                <img id="upg-source-img" src="" style="display:none" onerror="this.src='https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image'">
+                                <div id="upg-source-price" class="price-badge" style="display:none">0 ₽</div>
+                            </div>
+                        </div>
+
+                        <div class="upg-arrow">
+                            <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                        </div>
+
+                        <div class="upg-card glass-panel target">
+                            <div class="upg-card-header">РЕЗУЛЬТАТ</div>
+                            <div class="upg-card-body">
+                                <div id="upg-target-placeholder" class="placeholder-icon" style="opacity:0.3">?</div>
+                                <div id="upg-not-found" class="error-text" style="display:none">НЕТ ДРОПА</div>
+                                
+                                <div id="upg-target-content" style="display:none">
+                                    <img id="upg-target-img" src="" onerror="this.src='https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image'">
+                                    <div id="upg-target-price" class="price-badge gold">0 ₽</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel controls-panel">
+                        <div class="multipliers-grid">
+                            <button onclick="setUpgradeMultiplier(1.5)">x1.5</button>
+                            <button onclick="setUpgradeMultiplier(2)">x2.0</button>
+                            <button onclick="setUpgradeMultiplier(5)">x5.0</button>
+                            <button onclick="setUpgradeMultiplier(10)">x10</button>
+                        </div>
+                        
+                        <div class="slider-wrapper">
+                            <div class="slider-labels">
+                                <span>Шанс</span>
+                                <span id="upg-chance-display">50%</span>
+                            </div>
+                            <input type="range" id="upg-chance-slider" min="1" max="75" value="50" oninput="updateUpgradeCalculation()">
+                        </div>
+                    </div>
+
+                    <div class="roll-container glass-panel">
+                        <div class="roll-track-neon">
+                            <div class="roll-win-area" id="roll-win-zone" style="width: 50%;"></div>
+                            <div class="roll-pointer" id="roll-pointer"></div>
+                            <div class="roll-lines">
+                                <i></i><i></i><i></i><i></i><i></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="upg-status-text" class="status-text"></div>
+
+                    <button id="btn-do-upgrade" class="btn-primary big-btn" onclick="startUpgrade()" disabled>
+                        <span>УЛУЧШИТЬ</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="tab-contract" class="section">
+                <div class="hero-section small">
+                    <h1>Контракты</h1>
+                    <p>Обменяй 5-10 предметов</p>
+                </div>
+
+                <div class="info-card" style="margin-bottom: 15px;">
+                     <div class="info-text" style="text-align:center; width:100%;">
+                        Выбери от <b>5</b> до <b>10</b> предметов.<br>
+                        Шанс получить предмет дороже: <b>Непредсказуемо</b>
+                     </div>
+                </div>
+
+                <div id="contract-stats" class="contract-stats glass-panel">
+                    <div>Выбрано: <span id="contract-count" class="gold-text">0</span></div>
+                    <div>Сумма: <span id="contract-sum" class="gold-text">0</span> ₽</div>
+                </div>
+
+                <div id="contract-grid" class="inventory-grid"></div>
+                <div id="contract-empty" class="empty-state" style="display:none;">
+                    <div class="empty-icon">📂</div>
+                    <p>Нет предметов для контракта</p>
+                </div>
+
+                <div class="contract-footer">
+                    <button id="btn-sign-contract" class="btn-primary big-btn" onclick="signContract()" disabled>
+                        <span>ПОДПИСАТЬ КОНТРАКТ</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="tab-shop" class="section">
+                <div class="hero-section small">
+                    <h1>Магазин</h1>
+                    <p>Пополнение баланса</p>
+                </div>
+                
+                <div class="promo-box glass-panel">
+                    <input type="text" id="promo-input" placeholder="Промокод">
+                    <button onclick="activatePromo()">→</button>
+                </div>
+                 <div style="font-size:10px; color:#666; text-align:center; margin-top:-15px; margin-bottom:15px;">Промокоды: BONUS, FREE</div>
+
+                <div class="info-card warning" style="margin-bottom: 20px;">
+                    <div class="info-icon">⚠️</div>
+                    <div class="info-text">
+                        Внимание! Из-за комиссии платежной системы на баланс зачисляется <b>99%</b> от суммы пополнения.
+                    </div>
+                </div>
+
+                <div class="shop-grid">
+                    <div class="shop-item glass-panel" onclick="initYooPayment(50)">
+                        <div class="shop-val">50 ₽</div>
+                        <div class="shop-desc">Начинающий</div>
+                    </div>
+                    <div class="shop-item glass-panel hit" onclick="initYooPayment(500)">
+                        <div class="badge-hit">HIT</div>
+                        <div class="shop-val">500 ₽</div>
+                        <div class="shop-desc">Популярное</div>
+                    </div>
+                    <div class="shop-item glass-panel gold" onclick="initYooPayment(1000)">
+                        <div class="shop-val">1000 ₽</div>
+                        <div class="shop-desc">Обычный</div>
+                    </div>
+                    <div class="shop-item glass-panel" onclick="initYooPayment(5000)">
+                        <div class="shop-val">5000 ₽</div>
+                        <div class="shop-desc">Элитный</div>
+                    </div>
+                </div>
+
+                <div class="custom-pay glass-panel">
+                    <input type="number" id="custom-amount" placeholder="Другая сумма... (мин. 10 руб)">
+                    <button onclick="payCustomAmount()">Оплатить</button>
+                </div>
+
+                <div id="payment-status-box" class="payment-status-box" style="display:none;">
+                    <div class="payment-loader"></div>
+                    <div class="payment-info">
+                        <span class="p-title">Ожидание оплаты...</span>
+                        <span class="p-desc">Перейдите по ссылке для оплаты</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-inventory" class="section">
+                <div class="inventory-header">
+                    <h2>Гараж</h2>
+                    <button id="btn-sell-all" class="btn-danger-small" onclick="sellAllItems()" style="display:none;">Продать всё</button>
+                </div>
+                
+                <div id="inventory-grid" class="inventory-grid"></div>
+                
+                <div id="empty-inventory" class="empty-state" style="display:none;">
+                    <div class="empty-icon">📂</div>
+                    <p>Здесь пока пусто</p>
+                    <span>Открывай кейсы, чтобы пополнить гараж</span>
+                </div>
+            </div>
+        </main>
+    </div> 
+
+    <nav class="glass-nav">
+        <button class="nav-item active" onclick="switchTab('cases')">
+            <div class="nav-icon">📦</div>
+            <span>Кейсы</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('upgrade')">
+            <div class="nav-icon">⚡️</div>
+            <span>Апгрейд</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('contract')">
+            <div class="nav-icon">📜</div>
+            <span>Контракт</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('shop')">
+            <div class="nav-icon">💳</div>
+            <span>Баланс</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('inventory')">
+            <div class="nav-icon">🚘</div>
+            <span>Гараж</span>
+        </button>
+    </nav>
+
+    <div class="modal-overlay" id="modal-preview">
+        <div class="modal-glass slide-up">
+            <button class="btn-close" onclick="closeModal('modal-preview')">✕</button>
+            <div class="case-preview-top">
+                <img id="preview-img" src="" onerror="this.src='https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image'">
+                <h2 id="preview-title">Case Name</h2>
+                <div class="price-pill" id="preview-price">0 ₽</div>
+            </div>
+            
+            <div id="sub-timer" class="sub-timer" style="display:none;"></div>
+            <button id="btn-sub-check" class="btn-primary btn-sub-check" style="display:none;" onclick="checkSubscriptionAction()">ПОДПИСАТЬСЯ</button>
+
+            <div class="qty-selector" id="qty-selector">
+                <button class="qty-btn active" onclick="setOpenCount(1)">x1</button>
+                <button class="qty-btn" onclick="setOpenCount(2)">x2</button>
+                <button class="qty-btn" onclick="setOpenCount(5)">x5</button>
+                <button class="qty-btn" onclick="setOpenCount(10)">x10</button>
+            </div>
+            <div class="items-scroller-title">Содержимое:</div>
+            <div class="items-scroller" id="preview-items-container"></div>
+            <div class="modal-footer-sticky">
+                <label class="toggle-fast">
+                    <input type="checkbox" id="fast-open-check">
+                    <span class="toggle-track"></span>
+                    <span>Быстро</span>
+                </label>
+                <button id="btn-open-case" class="btn-primary big-btn" onclick="startRouletteSequence()">
+                    ОТКРЫТЬ ЗА <span id="btn-total-price">0</span> ₽
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-inventory-action">
+        <div class="modal-glass center-modal modern-item-modal">
+            <button class="btn-close" onclick="closeModal('modal-inventory-action')" style="z-index: 20;">✕</button>
+            <div class="modern-card-bg" id="inv-bg-glow"></div>
+            <div class="inv-action-content">
+                <div class="item-showcase">
+                    <img id="inv-item-img" src="" onerror="this.src='https://placehold.co/100x100/1a1a1a/ffffff?text=No+Image'">
+                    <div class="item-rarity-badge" id="inv-rarity-badge">LEGENDARY</div>
+                </div>
+                <div class="item-info-block">
+                    <h3 id="inv-item-name">Item Name</h3>
+                    <div class="price-tag-modern"><span id="inv-item-price">0</span> ₽</div>
+                </div>
+                <div class="item-stats-row">
+                    <div class="stat-box"><div class="stat-label">В ИГРУ</div><div class="stat-value" id="inv-item-virt-price">0 Вирт</div></div>
+                    <div class="stat-box"><div class="stat-label">Тип</div><div class="stat-value">Предмет</div></div>
+                </div>
+                <div class="action-buttons-modern">
+                    <button class="btn-sell-modern" onclick="sellCurrentItem()"><span>ПРОДАТЬ</span><span class="btn-subtext">+<span id="sell-btn-price">0</span> ₽</span></button>
+                    <button class="btn-withdraw-modern" onclick="withdrawCurrentItem()"><span>ЗАБРАТЬ</span><span class="btn-subtext">В ИГРУ</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-upg-select">
+        <div class="modal-glass center-modal full-height">
+            <button class="btn-close" onclick="closeModal('modal-upg-select')">✕</button>
+            <h3>Выбери предмет</h3>
+            <div class="upg-select-list" id="upg-select-grid"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-profile">
+        <div class="modal-glass center-modal">
+            <button class="btn-close" onclick="closeModal('modal-profile')">✕</button>
+            <h3>Профиль</h3>
+            <div class="profile-scroll-area">
+                <div class="settings-form">
+                    <div class="input-group"><label>Никнейм</label><input type="text" id="setting-nick" placeholder="Ivan_Ivanov"></div>
+                    <div class="row-group">
+                        <div class="input-group"><label>Сервер</label><select id="setting-server">
+                                <option value="Red">Red</option><option value="Green">Green</option><option value="Blue">Blue</option>
+                                <option value="Yellow">Yellow</option><option value="Orange">Orange</option><option value="Purple">Purple</option>
+                                <option value="Lime">Lime</option><option value="Pink">Pink</option><option value="Cherry">Cherry</option>
+                                <option value="Black">Black</option><option value="Indigo">Indigo</option><option value="White">White</option>
+                                <option value="Magenta">Magenta</option><option value="Crimson">Crimson</option><option value="Gold">Gold</option>
+                                <option value="Azure">Azure</option><option value="Platinum">Platinum</option><option value="Aqua">Aqua</option>
+                                <option value="Gray">Gray</option><option value="Ice">Ice</option><option value="Chilli">Chilli</option>
+                                <option value="Choco">Choco</option><option value="Moscow">Moscow</option><option value="SPB">SPB</option>
+                                <option value="Ufa">Ufa</option><option value="Sochi">Sochi</option><option value="Kazan">Kazan</option>
+                                <option value="Samara">Samara</option><option value="Rostov">Rostov</option><option value="Anapa">Anapa</option>
+                                <option value="EKB">EKB</option><option value="Krasnodar">Krasnodar</option><option value="Arzamas">Arzamas</option>
+                                <option value="Novosib">Novosib</option><option value="Grozny">Grozny</option><option value="Saratov">Saratov</option>
+                                <option value="Omsk">Omsk</option><option value="Irkutsk">Irkutsk</option><option value="Volgograd">Volgograd</option>
+                                <option value="Voronezh">Voronezh</option><option value="Belgorod">Belgorod</option><option value="Makhachkala">Makhachkala</option>
+                                <option value="Vladikavkaz">Vladikavkaz</option><option value="Vladivostok">Vladivostok</option><option value="Kaliningrad">Kaliningrad</option>
+                                <option value="Chelyabinsk">Chelyabinsk</option><option value="Krasnoyarsk">Krasnoyarsk</option><option value="Cheboksary">Cheboksary</option>
+                                <option value="Khabarovsk">Khabarovsk</option><option value="Perm">Perm</option><option value="Tula">Tula</option>
+                                <option value="Ryazan">Ryazan</option><option value="Murmansk">Murmansk</option><option value="Penza">Penza</option>
+                                <option value="Kursk">Kursk</option><option value="Arkhangelsk">Arkhangelsk</option><option value="Orenburg">Orenburg</option>
+                                <option value="Kirov">Kirov</option><option value="Kemerovo">Kemerovo</option><option value="Tyumen">Tyumen</option>
+                                <option value="Tolyatti">Tolyatti</option><option value="Ivanovo">Ivanovo</option><option value="Stavropol">Stavropol</option>
+                                <option value="Smolensk">Smolensk</option><option value="Pskov">Pskov</option><option value="Bryansk">Bryansk</option>
+                                <option value="Orel">Orel</option><option value="Yaroslavl">Yaroslavl</option><option value="Barnaul">Barnaul</option>
+                                <option value="Lipetsk">Lipetsk</option><option value="Ulyanovsk">Ulyanovsk</option><option value="Yakutsk">Yakutsk</option>
+                                <option value="Tambov">Tambov</option><option value="Bratsk">Bratsk</option><option value="Astrakhan">Astrakhan</option>
+                                <option value="Chita">Chita</option><option value="Kostroma">Kostroma</option><option value="Vladimir">Vladimir</option>
+                                <option value="Kaluga">Kaluga</option><option value="Novgorod">Novgorod</option><option value="Taganrog">Taganrog</option>
+                                <option value="Vologda">Vologda</option><option value="Tver">Tver</option><option value="Tomsk">Tomsk</option>
+                                <option value="Izhevsk">Izhevsk</option><option value="Surgut">Surgut</option><option value="Podolsk">Podolsk</option>
+                                <option value="Magadan">Magadan</option><option value="Cherepovets">Cherepovets</option><option value="Norilsk">Norilsk</option>
+                        </select></div>
+                        <div class="input-group"><label>Счет</label><input type="number" id="setting-bank" placeholder="0000"></div>
+                    </div>
+                    <button class="btn-primary" onclick="saveSettings()">Сохранить</button>
+                </div>
+                <div class="profile-stats"><div class="stat-line"><span>ID:</span> <span id="profile-uid">...</span></div><div class="stat-line"><span>Баланс:</span> <span id="profile-bal" class="gold-text">0</span></div></div>
+                <div class="history-block"><h4>История операций</h4><div class="history-scroll-container"><div id="history-list"></div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-win">
+        <div class="modal-glass center-modal win-modal" id="win-modal-content">
+            <div class="win-light" id="win-light-bg"></div>
+            <h2 class="win-title">ПОБЕДА!</h2>
+            <div id="win-grid" class="win-grid"></div>
+            <div class="win-sum">Общая стоимость: <span id="win-total-price">0</span> ₽</div>
+            <div class="win-actions">
+                <button class="btn-secondary" onclick="finishWin(false)">Продать</button>
+                <button class="btn-primary" onclick="finishWin(true)">В гараж</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="modal-withdraw-success">
+        <div class="modal-glass center-modal small-modal">
+            <div class="icon-success" style="font-size:40px; color:#4CAF50; text-align:center;">✔</div>
+            <h3 style="text-align:center;">Готово</h3>
+            <p id="withdraw-success-msg" style="text-align:center; color:#ccc; font-size:13px; margin:10px 0;">Заявка создана</p>
+            <button class="btn-primary" onclick="closeModal('modal-withdraw-success')">OK</button>
+        </div>
+    </div>
+
+    <div class="roulette-overlay" id="modal-roulette">
+        <div class="roulette-status" id="roulette-status">ОТКРЫВАЕМ...</div>
+        <div id="roulette-strips-container" class="roulette-strips-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

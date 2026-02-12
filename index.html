@@ -91,46 +91,6 @@
                 </div>
             </div>
 
-            <div id="tab-referral" class="section">
-                <div class="hero-section small">
-                    <h1>Партнерка</h1>
-                    <p>Приглашай и зарабатывай</p>
-                </div>
-
-                <div class="ref-card glass-panel">
-                    <div class="ref-header">Твой заработок</div>
-                    <div class="ref-balance"><span id="ref-earn-display">0</span> ₽</div>
-                    <div class="ref-stats-row">
-                        <div class="ref-stat">
-                            <div class="rs-val" id="ref-count-display">0</div>
-                            <div class="rs-label">Приглашено</div>
-                        </div>
-                        <div class="ref-stat">
-                            <div class="rs-val">10 ₽</div>
-                            <div class="rs-label">За друга</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ref-link-box glass-panel">
-                    <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Твоя ссылка:</div>
-                    <div class="ref-link-row">
-                        <input type="text" id="ref-link-input" readonly value="Загрузка...">
-                        <button onclick="copyRefLink()">COPY</button>
-                    </div>
-                    <div style="font-size: 10px; color: #666; margin-top: 8px; line-height: 1.3;">
-                        Отправь эту ссылку другу. Если он перейдет по ней и зайдет в приложение впервые, ты получишь <b>10 рублей</b> на баланс.
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-icon">🤝</div>
-                    <div class="info-text">
-                        Реферальная система работает автоматически. Деньги начисляются сразу после регистрации друга.
-                    </div>
-                </div>
-            </div>
-
             <div id="tab-upgrade" class="section">
                  <div class="hero-section small">
                     <h1>Апгрейд</h1>
@@ -313,10 +273,6 @@
             <div class="nav-icon">⚡️</div>
             <span>Апгрейд</span>
         </button>
-        <button class="nav-item" onclick="switchTab('referral')">
-            <div class="nav-icon">👥</div>
-            <span>Инвайт</span>
-        </button>
         <button class="nav-item" onclick="switchTab('contract')">
             <div class="nav-icon">📜</div>
             <span>Контракт</span>
@@ -403,6 +359,11 @@
             <button class="btn-close" onclick="closeModal('modal-profile')">✕</button>
             <h3>Профиль</h3>
             <div class="profile-scroll-area">
+                <div class="profile-stats">
+                    <div class="stat-line"><span>ID:</span> <span id="profile-uid">...</span></div>
+                    <div class="stat-line"><span>Баланс:</span> <span id="profile-bal" class="gold-text">0</span></div>
+                </div>
+
                 <div class="settings-form">
                     <div class="input-group"><label>Никнейм</label><input type="text" id="setting-nick" placeholder="Ivan_Ivanov"></div>
                     <div class="row-group">
@@ -442,8 +403,35 @@
                     </div>
                     <button class="btn-primary" onclick="saveSettings()">Сохранить</button>
                 </div>
-                <div class="profile-stats"><div class="stat-line"><span>ID:</span> <span id="profile-uid">...</span></div><div class="stat-line"><span>Баланс:</span> <span id="profile-bal" class="gold-text">0</span></div></div>
-                <div class="history-block"><h4>История операций</h4><div class="history-scroll-container"><div id="history-list"></div></div></div>
+
+                <div class="section-divider"><span>ПАРТНЕРСКАЯ ПРОГРАММА</span></div>
+                
+                <div class="ref-card glass-panel" style="margin-bottom: 10px;">
+                    <div class="ref-header">Твой заработок</div>
+                    <div class="ref-balance"><span id="ref-earn-display">0</span> ₽</div>
+                    <div class="ref-stats-row">
+                        <div class="ref-stat">
+                            <div class="rs-val" id="ref-count-display">0</div>
+                            <div class="rs-label">Друзей</div>
+                        </div>
+                        <div class="ref-stat">
+                            <div class="rs-val">10 ₽</div>
+                            <div class="rs-label">За друга</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ref-link-box glass-panel" style="padding: 10px;">
+                    <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Твоя ссылка для приглашения:</div>
+                    <div class="ref-link-row">
+                        <input type="text" id="ref-link-input" readonly value="Загрузка...">
+                        <button onclick="copyRefLink()">COPY</button>
+                    </div>
+                </div>
+                <div class="history-block" style="margin-top:20px;">
+                    <h4>История операций</h4>
+                    <div class="history-scroll-container"><div id="history-list"></div></div>
+                </div>
             </div>
         </div>
     </div>

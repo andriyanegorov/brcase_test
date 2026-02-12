@@ -1,14 +1,16 @@
 /* ==============================================
-   SCRIPT.JS - FINAL SUPABASE VERSION
+   SCRIPT.JS - FIXED VERSION
    ============================================== */
 
-// ✅ ВАШИ ДАННЫЕ ВСТАВЛЕНЫ
+// 1. КОНФИГУРАЦИЯ SUPABASE
 const SUPABASE_URL = 'https://itqlqsixknkqoggvubrp.supabase.co'; 
+// Используем ваш Anon Public Key (не Service Role!)
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0cWxxc2l4a25rcW9nZ3Z1YnJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjE3MDIsImV4cCI6MjA4NjQ5NzcwMn0.mV0As50_W8MBC3kpLYm_mLbExqRRyf8JaJi1eNOtAj4'; 
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ВАЖНО: Называем переменную sb, чтобы не было конфликта с window.supabase
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 1. TELEGRAM INIT
+// 2. TELEGRAM INIT
 const tg = window.Telegram && window.Telegram.WebApp 
     ? window.Telegram.WebApp 
     : { 
@@ -19,8 +21,9 @@ const tg = window.Telegram && window.Telegram.WebApp
         openTelegramLink: (url) => window.open(url, '_blank')
       };
 
-// 2. CONFIG
-const API_URL = "https://script.google.com/macros/s/AKfycbxRkfxXBv-TuHtMMWnYYma_EY4H_2JICfaCsD_5N0V4_dGQfsOVyo8Qk5QXQV7uhs9B/exec"; 
+// 3. CONFIG
+// Ссылка на ваш Google Apps Script
+const API_URL = "https://script.google.com/macros/s/AKfycbyeXKjp0y4KdFvpIBYHHMmD48uWRtYHaSHb6iwJfNT5g87oCT9cVFREMGFqFWJua25b/exec"; 
 
 const TOPICS = { WITHDRAW: 2, DEPOSIT: 4, LOGS: 8 }; 
 const SUB_CHANNEL_URL = "https://t.me/blackrussiacases_news"; 
@@ -32,6 +35,7 @@ function getVirtPrice(rub) { return (rub * VIRT_RATE).toLocaleString() + ' Ви�
 const RARITY_VALS = { 'consumer': 1, 'common': 2, 'rare': 3, 'epic': 4, 'legendary': 5, 'mythical': 6 };
 const RARITY_COLORS = { 'consumer': '#B0B0B0', 'common': '#4CAF50', 'rare': '#3b82f6', 'epic': '#a855f7', 'legendary': '#eab308', 'mythical': '#ff3333' };
 
+// Сюда вставлять данные из админки (GAME_CONFIG и PROMO_CODES)
 let GAME_CONFIG = []; 
 let PROMO_CODES = []; 
 
@@ -70,78 +74,86 @@ async function initUserSessionSupabase() {
     
     // 1. Получаем данные от TG
     let uid = 0, first_name = "User", username = "", photo_url = "";
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) { 
+    
+    // Безопасное получение ID (для тестов 123456, для TG реальный ID)
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id !== 0) { 
         uid = tg.initDataUnsafe.user.id; 
         first_name = tg.initDataUnsafe.user.first_name || "User";
         username = tg.initDataUnsafe.user.username ? `@${tg.initDataUnsafe.user.username}` : "";
         photo_url = tg.initDataUnsafe.user.photo_url || "";
     } else {
-        // Для тестов в браузере (если нет TG)
-        uid = 123456; 
+        uid = 123456; // Тестовый ID для браузера
         first_name = "BrowserTester";
     }
 
-    // 2. Запрос в БД
-    const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('telegram_id', uid)
-        .maybeSingle(); // Используем maybeSingle чтобы не было ошибки если юзера нет
-
-    if (error) {
-        console.error("Supabase Error:", error);
-        alert("Ошибка базы данных: " + error.message);
-        // Убираем загрузку даже при ошибке, чтобы видеть интерфейс
-        document.getElementById('loading-screen').style.display = 'none';
-        return;
-    }
-
-    if (data) {
-        // Пользователь найден
-        console.log("User found:", data);
-        user = {
-            uid: data.telegram_id,
-            name: first_name, 
-            tgUsername: username,
-            balance: Number(data.balance),
-            inventory: data.inventory || [],
-            history: data.history || [],
-            gameNick: data.game_nick || "",
-            gameServer: data.game_server || "Red",
-            bankAccount: data.bank_account || "",
-            activatedPromos: data.activated_promos || [],
-            isSubscribed: data.is_subscribed || false,
-            lastSubCaseTime: data.last_sub_case_time || 0,
-            avatar: photo_url
-        };
-        // Обновляем имя/ник в фоне
-        supabase.from('users').update({ username: username, first_name: first_name }).eq('telegram_id', uid).then();
-
-    } else {
-        // Пользователь НЕ найден -> Создаем
-        console.log("Creating new user...");
-        const newUser = { 
-            telegram_id: uid, 
-            username: username, 
-            first_name: first_name,
-            balance: 0,
-            inventory: [],
-            history: []
-        };
-
-        const { error: insertError } = await supabase
+    try {
+        // 2. Запрос в БД (используем sb вместо supabase)
+        const { data, error } = await sb
             .from('users')
-            .insert([newUser]);
-        
-        if(insertError) {
-            console.error("Create User Error:", insertError);
-            alert("Ошибка создания профиля: " + insertError.message);
+            .select('*')
+            .eq('telegram_id', uid)
+            .maybeSingle(); 
+
+        if (error) {
+            console.error("Supabase Error:", error);
+            // Если ошибка БД, показываем дефолтного юзера, чтобы не висела загрузка
+            document.getElementById('loading-screen').style.display = 'none';
+            user.uid = uid;
+            user.name = first_name;
+            updateUI();
+            showNotify("Ошибка связи с базой данных", "error");
+            return;
         }
-        
-        user = { ...DEFAULT_USER, ...newUser, uid: uid, avatar: photo_url };
+
+        if (data) {
+            // Пользователь найден
+            console.log("User found:", data);
+            user = {
+                uid: data.telegram_id,
+                name: first_name, 
+                tgUsername: username,
+                balance: Number(data.balance),
+                inventory: data.inventory || [],
+                history: data.history || [],
+                gameNick: data.game_nick || "",
+                gameServer: data.game_server || "Red",
+                bankAccount: data.bank_account || "",
+                activatedPromos: data.activated_promos || [],
+                isSubscribed: data.is_subscribed || false,
+                lastSubCaseTime: data.last_sub_case_time || 0,
+                avatar: photo_url
+            };
+            // Обновляем имя/ник в фоне
+            sb.from('users').update({ username: username, first_name: first_name }).eq('telegram_id', uid).then();
+
+        } else {
+            // Пользователь НЕ найден -> Создаем
+            console.log("Creating new user...");
+            const newUser = { 
+                telegram_id: uid, 
+                username: username, 
+                first_name: first_name,
+                balance: 0,
+                inventory: [],
+                history: []
+            };
+
+            const { error: insertError } = await sb
+                .from('users')
+                .insert([newUser]);
+            
+            if(insertError) {
+                console.error("Create User Error:", insertError);
+                showNotify("Не удалось создать профиль", "error");
+            }
+            
+            user = { ...DEFAULT_USER, ...newUser, uid: uid, avatar: photo_url };
+        }
+    } catch (err) {
+        console.error("Critical Error:", err);
     }
 
-    // 3. Убираем загрузочный экран
+    // 3. Убираем загрузочный экран ВСЕГДА
     document.getElementById('loading-screen').style.display = 'none';
     updateUI(); 
     renderInventory(); 
@@ -149,7 +161,8 @@ async function initUserSessionSupabase() {
 }
 
 async function saveUser() {
-    const { error } = await supabase
+    // Используем sb
+    const { error } = await sb
         .from('users')
         .update({
             balance: user.balance,
@@ -167,7 +180,41 @@ async function saveUser() {
     if(error) console.error("Save Error:", error);
 }
 
-// --- STANDARD LOGIC ---
+// --- ДАЛЕЕ ИДЕТ ВЕСЬ ОСТАЛЬНОЙ КОД (БЕЗ ИЗМЕНЕНИЙ, КРОМЕ ОДНОГО МЕСТА) ---
+// В функции initYooPayment нужно поменять вызов supabase на sb
+
+async function initYooPayment(sum) { 
+    if(!sum || sum < 10) return showNotify("Минимальная сумма 10₽", "error"); 
+    const label = `order_${user.uid}_${Date.now()}`; 
+    // ЗАМЕНИТЕ ВАШ КОШЕЛЕК ЮMANEY ЗДЕСЬ, ЕСЛИ НУЖНО
+    const url = `https://yoomoney.ru/quickpay/confirm?receiver=4100117889685528&quickpay-form=shop&targets=Deposit&paymentType=AC&sum=${sum}&label=${label}`; 
+    if(tg.openLink) tg.openLink(url); else window.open(url, '_blank'); 
+    
+    const statusBox = document.getElementById('payment-status-box'); 
+    statusBox.style.display = 'flex'; 
+    statusBox.querySelector('.p-title').innerText = `Ожидание ${sum} ₽`; 
+    statusBox.querySelector('.p-desc').innerText = "Проверка транзакции..."; 
+
+    if(paymentCheckInterval) clearInterval(paymentCheckInterval); 
+    let checks = 0; const startBalance = user.balance;
+    
+    paymentCheckInterval = setInterval(async () => { 
+        checks++; 
+        if(checks > 60) { clearInterval(paymentCheckInterval); statusBox.querySelector('.p-title').innerText = "Время истекло"; return; } 
+        
+        // Используем sb
+        const { data } = await sb.from('users').select('balance').eq('telegram_id', user.uid).maybeSingle();
+        
+        if (data && data.balance > startBalance) {
+             const diff = data.balance - startBalance; clearInterval(paymentCheckInterval);
+             user.balance = data.balance; addHistory('Пополнение', `+${diff}`);
+             updateUI(); statusBox.querySelector('.p-title').innerText = "Успешно!"; 
+             setTimeout(() => { statusBox.style.display = 'none'; }, 3000); 
+        }
+    }, 5000); 
+}
+
+// --- ОСТАЛЬНЫЕ ФУНКЦИИ UI (БЕЗ ИЗМЕНЕНИЙ) ---
 
 function createNotificationArea() { if(!document.getElementById('notify-area')) { const div = document.createElement('div'); div.id = 'notify-area'; document.body.appendChild(div); } }
 function createContractAnimDOM() { if(!document.querySelector('.contract-anim-overlay')) { const div = document.createElement('div'); div.className = 'contract-anim-overlay'; div.id = 'contract-anim-overlay'; div.innerHTML = `<div class="contract-vortex" id="contract-vortex"></div><div class="contract-flash" id="contract-flash"></div>`; document.body.appendChild(div); } }
@@ -178,6 +225,8 @@ function loadExternalConfig() {
     const adminPromos = localStorage.getItem('admin_promo_config_v3');
     if(adminCases) { try { GAME_CONFIG = JSON.parse(adminCases); } catch(e){} }
     if(adminPromos) { try { PROMO_CODES = JSON.parse(adminPromos); } catch(e){} }
+    // Если конфига нет, используем пустой массив, чтобы не было ошибки forEach
+    if(!GAME_CONFIG) GAME_CONFIG = [];
 }
 
 async function sendTelegramLog(topicId, text) {
@@ -213,7 +262,7 @@ function updateUI() {
 function initCases() { 
     const cats = { 'free': 'cases-free', 'default': 'cases-default', 'bundles': 'cases-bundles', 'risk': 'cases-risk', 'container': 'containers' }; 
     for (let c in cats) { const el = document.getElementById(cats[c]); if(el) el.innerHTML = ''; } 
-    if (!GAME_CONFIG) return;
+    if (!GAME_CONFIG || GAME_CONFIG.length === 0) return;
     GAME_CONFIG.forEach(c => { 
         let targetId = cats[c.category] || 'cases-default';
         const div = document.getElementById(targetId); 
@@ -318,32 +367,6 @@ function openProfileModal() { document.getElementById('setting-nick').value = us
 
 async function activatePromo() { showNotify("Проверка подписки...", "info"); const isSub = await checkGlobalSubscription(); if(!PROMO_CODES || PROMO_CODES.length === 0) { showNotify("Промокоды не загружены", "error"); return; } if(!isSub) return showNotify("Сначала подпишитесь на канал!", "error"); const codeInput = document.getElementById('promo-input'); const code = codeInput.value.trim(); if(!code) return; const p = PROMO_CODES.find(x => x.code === code); if(p) { if(p.limit && user.activatedPromos.includes(code)) return showNotify("Уже использован", "error"); user.balance = Number(user.balance) + Number(p.val); if(p.limit) user.activatedPromos.push(code); addHistory(`Промо: ${code}`, `+${p.val}`); saveUser(); updateUI(); showNotify(`Промокод активирован: +${p.val} ₽`, 'success'); codeInput.value = ""; } else showNotify("Неверный код", "error"); }
 function payCustomAmount() { const val = parseInt(document.getElementById('custom-amount').value); initYooPayment(val); }
-
-async function initYooPayment(sum) { 
-    if(!sum || sum < 10) return showNotify("Минимальная сумма 10₽", "error"); 
-    const label = `order_${user.uid}_${Date.now()}`; 
-    const url = `https://yoomoney.ru/quickpay/confirm?receiver=4100117889685528&quickpay-form=shop&targets=Deposit&paymentType=AC&sum=${sum}&label=${label}`; 
-    if(tg.openLink) tg.openLink(url); else window.open(url, '_blank'); 
-    
-    const statusBox = document.getElementById('payment-status-box'); 
-    statusBox.style.display = 'flex'; 
-    statusBox.querySelector('.p-title').innerText = `Ожидание ${sum} ₽`; 
-    statusBox.querySelector('.p-desc').innerText = "Проверка транзакции..."; 
-
-    if(paymentCheckInterval) clearInterval(paymentCheckInterval); 
-    let checks = 0; const startBalance = user.balance;
-    paymentCheckInterval = setInterval(async () => { 
-        checks++; 
-        if(checks > 60) { clearInterval(paymentCheckInterval); statusBox.querySelector('.p-title').innerText = "Время истекло"; return; } 
-        const { data } = await supabase.from('users').select('balance').eq('telegram_id', user.uid).maybeSingle();
-        if (data && data.balance > startBalance) {
-             const diff = data.balance - startBalance; clearInterval(paymentCheckInterval);
-             user.balance = data.balance; addHistory('Пополнение', `+${diff}`);
-             updateUI(); statusBox.querySelector('.p-title').innerText = "Успешно!"; 
-             setTimeout(() => { statusBox.style.display = 'none'; }, 3000); 
-        }
-    }, 5000); 
-}
 
 function openUpgradeSelector() { const list = document.getElementById('upg-select-grid'); list.innerHTML = ''; if(user.inventory.length === 0) return showNotify("Инвентарь пуст", "error"); user.inventory.forEach((item, idx) => { list.innerHTML += `<div class="upg-item-row rarity-${item.rarity}"><div class="upg-row-left"><img src="${item.img}" class="upg-row-img"><div class="upg-row-info"><div class="upg-row-name">${item.name}</div><div class="upg-row-price">${item.price} ₽</div></div></div><button class="btn-upg-select" onclick="selectUpgradeSource(${idx})">ВЫБРАТЬ</button></div>`; }); document.getElementById('modal-upg-select').style.display = 'flex'; }
 function selectUpgradeSource(idx) { upgradeState.sourceIdx = idx; const item = user.inventory[idx]; document.getElementById('upg-source-slot').querySelector('.placeholder-icon').style.display = 'none'; const img = document.getElementById('upg-source-img'); img.src = item.img; img.style.display = 'block'; const pr = document.getElementById('upg-source-price'); pr.innerText = item.price + '₽'; pr.style.display = 'block'; closeModal('modal-upg-select'); updateUpgradeCalculation(); }

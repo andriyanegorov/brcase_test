@@ -189,21 +189,35 @@ function initRealtime() {
 function addLiveFeedItem(item) {
     const track = document.getElementById('live-feed-track');
     if(!track) return;
+    
     // Удаляем плейсхолдер
     if(track.querySelector('.live-item-placeholder')) track.innerHTML = '';
     
+    // Определение цвета для имени предмета
+    const color = RARITY_COLORS[item.item_rarity] || '#fff';
+    
+    // Генерация аватара (плейсхолдер)
+    const avatarUrl = "img/avatar_placeholder.png";
+
     // Создаем элемент
     const el = document.createElement('div');
     el.className = `live-item ${item.item_rarity || 'common'}`;
+    
     el.innerHTML = `
-        <span class="live-user">${item.user_name || 'Игрок'}:</span>
-        <img src="${item.item_img}" onerror="this.src='${PLACEHOLDER_IMG}'">
-        <span class="live-pname">${item.item_name}</span>
+        <div class="live-user-avatar">
+            <img src="${avatarUrl}" onerror="this.src='https://placehold.co/50x50/333/fff?text=U'">
+        </div>
+        <div class="live-info">
+            <span class="u-name">${item.user_name || 'Игрок'}</span>
+            <span class="i-name" style="color: ${color}">${item.item_name}</span>
+        </div>
+        <img src="${item.item_img}" class="live-item-img" onerror="this.src='${PLACEHOLDER_IMG}'">
     `;
     
     // Добавляем в начало
     track.prepend(el);
     
+    // Анимация появления (опционально через CSS transition, здесь просто вставка)
     // Очищаем старые, чтобы не грузить память
     if(track.children.length > 20) {
         track.lastElementChild.remove();

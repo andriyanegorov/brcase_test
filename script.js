@@ -1,5 +1,5 @@
 /* ==============================================
-   SCRIPT.JS - FINAL VERSION
+   SCRIPT.JS - FINAL FIXED VERSION
    ============================================== */
 
 // 1. КОНФИГУРАЦИЯ SUPABASE
@@ -31,7 +31,7 @@ function getVirtPrice(rub) { return (rub * VIRT_RATE).toLocaleString() + ' Ви�
 const RARITY_VALS = { 'consumer': 1, 'common': 2, 'rare': 3, 'epic': 4, 'legendary': 5, 'mythical': 6 };
 const RARITY_COLORS = { 'consumer': '#B0B0B0', 'common': '#4CAF50', 'rare': '#3b82f6', 'epic': '#a855f7', 'legendary': '#eab308', 'mythical': '#ff3333' };
 
-// ВСТАВЛЯЕМ ВАШ КОНФИГ СЮДА
+// === ПОЛНЫЙ КОНФИГ КЕЙСОВ (ВЗЯТ ИЗ ADMIN.HTML) ===
 const GAME_CONFIG = [
     {
         "id": "sub_case_1",
@@ -39,51 +39,14 @@ const GAME_CONFIG = [
         "price": 0,
         "category": "free",
         "img": "img/free_case.png",
-        "chances": {
-            "consumer": 40,
-            "common": 30,
-            "rare": 20,
-            "epic": 8,
-            "legendary": 2,
-            "mythical": 0
-        },
+        "chances": { "consumer": 40, "common": 30, "rare": 20, "epic": 8, "legendary": 2, "mythical": 0 },
         "items": [
-            {
-                "name": "50.000 Вирт",
-                "price": 5,
-                "img": "img/money.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "100.000 Вирт",
-                "price": 10,
-                "img": "img/money.png",
-                "rarity": "common"
-            },
-            {
-                "name": "BMW M5 F90",
-                "price": 400,
-                "img": "img/m5f90.png",
-                "rarity": "legendary"
-            },
-            {
-                "name": "Маска Демона",
-                "price": 150,
-                "img": "img/demon.png",
-                "rarity": "epic"
-            },
-            {
-                "name": "Аптечка",
-                "price": 7,
-                "img": "img/aptechka.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "10 BC",
-                "price": 10,
-                "img": "img/bc.png",
-                "rarity": "common"
-            }
+            { "name": "50.000 Вирт", "price": 5, "img": "img/money.png", "rarity": "consumer" },
+            { "name": "100.000 Вирт", "price": 10, "img": "img/money.png", "rarity": "common" },
+            { "name": "BMW M5 F90", "price": 400, "img": "img/m5f90.png", "rarity": "legendary" },
+            { "name": "Маска Демона", "price": 150, "img": "img/demon.png", "rarity": "epic" },
+            { "name": "Аптечка", "price": 7, "img": "img/aptechka.png", "rarity": "consumer" },
+            { "name": "10 BC", "price": 10, "img": "img/bc.png", "rarity": "common" }
         ]
     },
     {
@@ -92,169 +55,92 @@ const GAME_CONFIG = [
         "price": 29,
         "category": "default",
         "img": "img/bomj_case.png",
-        "chances": {
-            "consumer": 50,
-            "common": 38,
-            "rare": 8,
-            "epic": 3,
-            "legendary": 1,
-            "mythical": 1
-        },
+        "chances": { "consumer": 50, "common": 38, "rare": 8, "epic": 3, "legendary": 1, "mythical": 1 },
         "items": [
-            {
-                "name": "50.000 Вирт",
-                "price": 5,
-                "img": "img/money.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "150.000 Вирт",
-                "price": 15,
-                "img": "img/money.png",
-                "rarity": "common"
-            },
-            {
-                "name": "400.000 Вирт",
-                "price": 40,
-                "img": "img/money.png",
-                "rarity": "epic"
-            },
-            {
-                "name": "5.000.000 Вирт",
-                "price": 500,
-                "img": "img/money.png",
-                "rarity": "legendary"
-            },
-            {
-                "name": "Очки «Сердечки»",
-                "price": 500,
-                "img": "img/heartglass.png",
-                "rarity": "legendary"
-            },
-            {
-                "name": "Серый кейс",
-                "price": 500,
-                "img": "img/graycase.png",
-                "rarity": "legendary"
-            },
-            {
-                "name": "Маска Дали",
-                "price": 70,
-                "img": "img/dali.png",
-                "rarity": "rare"
-            },
-            {
-                "name": "Очки «Street»",
-                "price": 19,
-                "img": "img/streetglass.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "Скин «Емеля»",
-                "price": 300,
-                "img": "img/emelya.png",
-                "rarity": "epic"
-            },
-            {
-                "name": "Скин «Пузатый»",
-                "price": 10,
-                "img": "img/pyzatiy.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "Набор «Сельчанин»",
-                "price": 70,
-                "img": "img/pack_selchanin.png",
-                "rarity": "rare"
-            },
-            {
-                "name": "Набор «Бандит»",
-                "price": 650,
-                "img": "img/pack_bandit.png",
-                "rarity": "legendary"
-            },
-            {
-                "name": "ZAZ",
-                "price": 15,
-                "img": "img/zaz.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "VAZ 2107",
-                "price": 30,
-                "img": "img/2107.png",
-                "rarity": "common"
-            },
-            {
-                "name": "LADA NIVA",
-                "price": 80,
-                "img": "img/niva.png",
-                "rarity": "rare"
-            },
-            {
-                "name": "LADA VESTA",
-                "price": 175,
-                "img": "img/vesta.png",
-                "rarity": "epic"
-            },
-            {
-                "name": "Mercedes-Benz W210",
-                "price": 300,
-                "img": "img/w210.png",
-                "rarity": "legendary"
-            },
-            {
-                "name": "10 BC",
-                "price": 10,
-                "img": "img/bc.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "25 BC",
-                "price": 25,
-                "img": "img/bc.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "50 BC",
-                "price": 50,
-                "img": "img/bc.png",
-                "rarity": "common"
-            },
-            {
-                "name": "500 BC",
-                "price": 500,
-                "img": "img/bc.png",
-                "rarity": "legendary"
-            },
-            {
-                "name": "Аптечка",
-                "price": 7,
-                "img": "img/aptechka.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "Ремонтный набор",
-                "price": 7,
-                "img": "img/remka.png",
-                "rarity": "consumer"
-            },
-            {
-                "name": "Скутер",
-                "price": 15,
-                "img": "img/skuter.png",
-                "rarity": "common"
-            }
+            { "name": "50.000 Вирт", "price": 5, "img": "img/money.png", "rarity": "consumer" },
+            { "name": "150.000 Вирт", "price": 15, "img": "img/money.png", "rarity": "common" },
+            { "name": "400.000 Вирт", "price": 40, "img": "img/money.png", "rarity": "epic" },
+            { "name": "5.000.000 Вирт", "price": 500, "img": "img/money.png", "rarity": "legendary" },
+            { "name": "Очки «Сердечки»", "price": 500, "img": "img/heartglass.png", "rarity": "legendary" },
+            { "name": "Серый кейс", "price": 500, "img": "img/graycase.png", "rarity": "legendary" },
+            { "name": "Маска Дали", "price": 70, "img": "img/dali.png", "rarity": "rare" },
+            { "name": "Очки «Street»", "price": 19, "img": "img/streetglass.png", "rarity": "consumer" },
+            { "name": "Скин «Емеля»", "price": 300, "img": "img/emelya.png", "rarity": "epic" },
+            { "name": "Скин «Пузатый»", "price": 10, "img": "img/pyzatiy.png", "rarity": "consumer" },
+            { "name": "Набор «Сельчанин»", "price": 70, "img": "img/pack_selchanin.png", "rarity": "rare" },
+            { "name": "Набор «Бандит»", "price": 650, "img": "img/pack_bandit.png", "rarity": "legendary" },
+            { "name": "ZAZ", "price": 15, "img": "img/zaz.png", "rarity": "consumer" },
+            { "name": "VAZ 2107", "price": 30, "img": "img/2107.png", "rarity": "common" },
+            { "name": "LADA NIVA", "price": 80, "img": "img/niva.png", "rarity": "rare" },
+            { "name": "LADA VESTA", "price": 175, "img": "img/vesta.png", "rarity": "epic" },
+            { "name": "Mercedes-Benz W210", "price": 300, "img": "img/w210.png", "rarity": "legendary" },
+            { "name": "10 BC", "price": 10, "img": "img/bc.png", "rarity": "consumer" },
+            { "name": "25 BC", "price": 25, "img": "img/bc.png", "rarity": "consumer" },
+            { "name": "50 BC", "price": 50, "img": "img/bc.png", "rarity": "common" },
+            { "name": "500 BC", "price": 500, "img": "img/bc.png", "rarity": "legendary" },
+            { "name": "Аптечка", "price": 7, "img": "img/aptechka.png", "rarity": "consumer" },
+            { "name": "Ремонтный набор", "price": 7, "img": "img/remka.png", "rarity": "consumer" },
+            { "name": "Скутер", "price": 15, "img": "img/skuter.png", "rarity": "common" }
         ]
     },
-    // ... ОСТАЛЬНЫЕ КЕЙСЫ (ВАШ КОД) ...
-    // Для краткости я оставил только начало, но вы знаете, что тут весь GAME_CONFIG
+    {
+        "id": 1770544149013,
+        "name": "Стандартный Кейс",
+        "price": 199,
+        "category": "default",
+        "img": "img/standart_case.png",
+        "chances": { "consumer": 0, "common": 60, "rare": 34, "epic": 5, "legendary": 1, "mythical": 0 },
+        "items": [
+            { "name": "Скин «Хоуми»", "price": 59, "img": "img/homie.png", "rarity": "common" },
+            { "name": "Скин «Опасный мужчина»", "price": 69, "img": "img/dangerman.png", "rarity": "common" },
+            { "name": "Рюкзак «Мопс»", "price": 79, "img": "img/mops.png", "rarity": "common" },
+            { "name": "Корона короля", "price": 249, "img": "img/korona.png", "rarity": "epic" },
+            { "name": "Volkswagel Golf GTi", "price": 99, "img": "img/golf.png", "rarity": "common" },
+            { "name": "BMW X5", "price": 219, "img": "img/x5.png", "rarity": "rare" },
+            { "name": "Nissan Qashqai", "price": 199, "img": "img/qashqai.png", "rarity": "rare" },
+            { "name": "Chevrolet Camaro ZL1", "price": 999, "img": "img/camaro.png", "rarity": "epic" },
+            { "name": "Lamborghini Aventador S", "price": 2999, "img": "img/aventador.png", "rarity": "legendary" },
+            { "name": "Mercedes AMG GT-R", "price": 1999, "img": "img/gtr.png", "rarity": "legendary" },
+            { "name": "100 BC", "price": 100, "img": "img/bc.png", "rarity": "common" }
+        ]
+    },
+    {
+        "id": 1770631358795,
+        "name": "Всё или Ничего (5%)",
+        "price": 39,
+        "category": "risk",
+        "img": "img/allorno5_case.png",
+        "chances": { "consumer": 0, "common": 99.8, "rare": 0, "epic": 0, "legendary": 0.2, "mythical": 0 },
+        "items": [
+            { "name": "Рюкзак «Мопс»", "price": 19, "img": "img/mops.png", "rarity": "common" },
+            { "name": "Mercedes AMG GT-R", "price": 1999, "img": "img/gtr.png", "rarity": "legendary" }
+        ]
+    },
+    {
+        "id": 1770829085914,
+        "name": "Дубайский Контейнер",
+        "price": 2499,
+        "category": "container",
+        "img": "img/dubai_case.png",
+        "chances": { "consumer": 0, "common": 0, "rare": 96, "epic": 3, "legendary": 0.95, "mythical": 0.05 },
+        "items": [
+            { "name": "Lamborghini Urus", "price": 3799, "img": "img/urus.png", "rarity": "epic" },
+            { "name": "Rolls-Royce Phantom", "price": 11999, "img": "img/senat.png", "rarity": "legendary" },
+            { "name": "Mercedes-Benz G63 AMG", "price": 5499, "img": "img/g63.png", "rarity": "legendary" },
+            { "name": "Lamborghini Aventador S", "price": 4999, "img": "img/aventador.png", "rarity": "epic" },
+            { "name": "GAZ 69", "price": 39999, "img": "img/gaz69.png", "rarity": "mythical" },
+            { "name": "Mercedes-Benz GT63s", "price": 1199, "img": "img/gt63s.png", "rarity": "rare" },
+            { "name": "Chevrolet Camaro ZL1", "price": 999, "img": "img/camaro.png", "rarity": "rare" },
+            { "name": "Mercedes-Benz Maybach S650", "price": 6199, "img": "img/maybach.png", "rarity": "legendary" }
+        ]
+    }
 ];
 
 const PROMO_CODES = [
     { "code": "ADMINKAADMINKAADMINKA", "val": 1000, "limit": 0 },
     { "code": "BRCASES", "val": 50, "limit": 1 },
-    { "code": "FREE", "val": 20, "limit": 1 }
+    { "code": "FREE", "val": 20, "limit": 1 },
+    { "code": "BONUS", "val": 100, "limit": 1 }
 ];
 
 const DEFAULT_USER = { 
@@ -302,6 +188,7 @@ function initRealtime() {
 
 function addLiveFeedItem(item) {
     const track = document.getElementById('live-feed-track');
+    if(!track) return;
     // Удаляем плейсхолдер
     if(track.querySelector('.live-item-placeholder')) track.innerHTML = '';
     
@@ -336,7 +223,7 @@ async function initUserSessionSupabase() {
         first_name = tg.initDataUnsafe.user.first_name || "User";
         username = tg.initDataUnsafe.user.username ? `@${tg.initDataUnsafe.user.username}` : "";
         photo_url = tg.initDataUnsafe.user.photo_url || "";
-        startParam = tg.initDataUnsafe.start_param; // Получаем ref_123
+        startParam = tg.initDataUnsafe.start_param; 
     } else {
         uid = 123456; 
         first_name = "BrowserTester";
@@ -396,7 +283,6 @@ async function initUserSessionSupabase() {
                 const rawRefId = startParam.split('_')[1];
                 if (rawRefId && rawRefId != uid) {
                     refId = Number(rawRefId);
-                    // Начисляем награду рефереру (Клиентская логика, лучше перенести на бэк, но в рамках ТЗ ок)
                     awardReferrer(refId);
                 }
             }
@@ -428,7 +314,6 @@ async function initUserSessionSupabase() {
 }
 
 async function awardReferrer(refId) {
-    // 1. Get current balance/stats of referrer
     const { data: refUser } = await sb.from('users').select('balance, referrals_count, referral_earnings').eq('telegram_id', refId).single();
     if(refUser) {
         const newBal = (Number(refUser.balance) || 0) + 10;
@@ -459,11 +344,16 @@ async function saveUser() {
 
 // --- REFERRAL UI ---
 function renderReferralStats() {
-    document.getElementById('ref-earn-display').innerText = user.referralEarnings;
-    document.getElementById('ref-count-display').innerText = user.referralsCount;
-    const botName = "blackrussiacases_bot"; // Замените на юзернейм вашего бота
+    const earnEl = document.getElementById('ref-earn-display');
+    if(earnEl) earnEl.innerText = user.referralEarnings;
+    
+    const countEl = document.getElementById('ref-count-display');
+    if(countEl) countEl.innerText = user.referralsCount;
+    
+    const botName = "blackrussiacases_bot"; 
     const link = `https://t.me/${botName}/app?startapp=ref_${user.uid}`;
-    document.getElementById('ref-link-input').value = link;
+    const linkInp = document.getElementById('ref-link-input');
+    if(linkInp) linkInp.value = link;
 }
 
 function copyRefLink() {
@@ -488,7 +378,7 @@ function finishWin(keep) {
             item_name: i.name,
             item_rarity: i.rarity,
             item_img: i.img
-        }]).then(); // don't await
+        }]).then(); 
     }); 
     
     if(keep) { 
@@ -510,11 +400,8 @@ function finishWin(keep) {
 }
 
 /* ==============================================
-   EXISTING HELPER FUNCTIONS (UNCHANGED)
+   HELPER FUNCTIONS
    ============================================== */
-// (Вставьте сюда остальные функции: createNotificationArea, initCases, switchTab, etc.)
-// Я приведу список, чтобы код был полным. Если нужно - просто скопируйте их из старого файла.
-
 function createNotificationArea() { if(!document.getElementById('notify-area')) { const div = document.createElement('div'); div.id = 'notify-area'; document.body.appendChild(div); } }
 function createContractAnimDOM() { if(!document.querySelector('.contract-anim-overlay')) { const div = document.createElement('div'); div.className = 'contract-anim-overlay'; div.id = 'contract-anim-overlay'; div.innerHTML = `<div class="contract-vortex" id="contract-vortex"></div><div class="contract-flash" id="contract-flash"></div>`; document.body.appendChild(div); } }
 function createContainerAnimDOM() { if(!document.querySelector('.container-anim-overlay')) { const div = document.createElement('div'); div.className = 'container-anim-overlay'; div.id = 'container-anim-overlay'; div.innerHTML = ` <div class="container-box" id="container-box"> <div class="container-lock"></div> <div class="container-door c-door-left"></div> <div class="container-door c-door-right"></div> <div class="container-inner-light"></div> <img id="container-reveal-img" class="container-item-reveal" src="" /> </div> `; document.body.appendChild(div); } }
@@ -540,12 +427,26 @@ function safeHaptic(type) { try { if (tg && tg.HapticFeedback) tg.HapticFeedback
 
 function addHistory(text, val) { const color = val.includes('+') ? '#4CAF50' : '#ff4d4d'; user.history.unshift({ text, val, color }); if(user.history.length > 30) user.history.pop(); renderHistory(); }
 
+// --- FIXED UPDATE UI FUNCTION ---
 function updateUI() { 
-    document.getElementById('user-balance').innerText = Math.floor(user.balance).toLocaleString(); 
-    document.getElementById('header-name').innerText = user.gameNick || user.name; 
-    if (user.avatar) document.getElementById('header-avatar').src = user.avatar; 
-    document.getElementById('profile-bal').innerText = Math.floor(user.balance).toLocaleString() + " ₽"; 
-    document.getElementById('profile-uid').innerText = user.uid; 
+    // Безопасное обновление элементов. Если элемента нет в HTML, код просто пропустит его.
+    const balEl = document.getElementById('user-balance');
+    if(balEl) balEl.innerText = Math.floor(user.balance).toLocaleString(); 
+    
+    // Вот здесь была ошибка (header-name нет в index.html), добавили проверку
+    const nameEl = document.getElementById('header-name');
+    if(nameEl) nameEl.innerText = user.gameNick || user.name; 
+
+    if (user.avatar) {
+        const avEl = document.getElementById('header-avatar');
+        if(avEl) avEl.src = user.avatar; 
+    }
+
+    const pBal = document.getElementById('profile-bal');
+    if(pBal) pBal.innerText = Math.floor(user.balance).toLocaleString() + " ₽"; 
+    
+    const pUid = document.getElementById('profile-uid');
+    if(pUid) pUid.innerText = user.uid; 
 }
 
 function initCases() { 

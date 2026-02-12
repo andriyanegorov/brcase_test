@@ -14,9 +14,28 @@
     <div class="bg-glow bg-glow-1"></div>
     <div class="bg-glow bg-glow-2"></div>
 
+    <div class="live-feed-strip">
+        <div class="live-feed-track" id="live-feed-track">
+            <div class="live-item-placeholder">Ожидание дропов...</div>
+        </div>
+    </div>
+
     <div id="loading-screen" style="position:fixed; inset:0; background:#09090b; z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
         <div class="payment-loader"></div>
         <div style="margin-top:15px; color:#FFD700; font-weight:bold;">ЗАГРУЗКА ПРОФИЛЯ...</div>
+    </div>
+
+    <div id="modal-banned" class="modal-overlay center-modal" style="display:none; z-index: 10000; background: #000;">
+        <div class="modal-glass center-modal" style="border-color: #ff4d4d; text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 10px;">⛔️</div>
+            <h2 style="color: #ff4d4d; margin: 0;">ВЫ ЗАБАНЕНЫ</h2>
+            <p style="color: #ccc; font-size: 13px; margin: 15px 0;">Доступ к приложению ограничен администрацией.</p>
+            <div style="background: rgba(255,77,77,0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,77,77,0.3);">
+                <div style="font-size: 10px; color: #ff4d4d; font-weight: bold; text-transform: uppercase;">Причина:</div>
+                <div id="ban-reason-text" style="font-size: 14px; color: #fff; font-weight: bold;">Нарушение правил</div>
+            </div>
+            <button class="btn-secondary" onclick="tg.close()" style="margin-top: 20px;">Закрыть</button>
+        </div>
     </div>
 
     <div id="blur-container">
@@ -39,9 +58,6 @@
                     <img id="header-avatar" src="img/avatar_placeholder.png" alt="Profile" onerror="this.src='https://placehold.co/100x100/1a1a1a/ffffff?text=User'">
                 </div>
             </div>
-
-            <span id="header-name" style="display:none;"></span>
-            <span id="header-uid" style="display:none;"></span>
         </header>
 
         <main>
@@ -75,8 +91,48 @@
                 </div>
             </div>
 
-            <div id="tab-upgrade" class="section">
+            <div id="tab-referral" class="section">
                 <div class="hero-section small">
+                    <h1>Партнерка</h1>
+                    <p>Приглашай и зарабатывай</p>
+                </div>
+
+                <div class="ref-card glass-panel">
+                    <div class="ref-header">Твой заработок</div>
+                    <div class="ref-balance"><span id="ref-earn-display">0</span> ₽</div>
+                    <div class="ref-stats-row">
+                        <div class="ref-stat">
+                            <div class="rs-val" id="ref-count-display">0</div>
+                            <div class="rs-label">Приглашено</div>
+                        </div>
+                        <div class="ref-stat">
+                            <div class="rs-val">10 ₽</div>
+                            <div class="rs-label">За друга</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ref-link-box glass-panel">
+                    <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Твоя ссылка:</div>
+                    <div class="ref-link-row">
+                        <input type="text" id="ref-link-input" readonly value="Загрузка...">
+                        <button onclick="copyRefLink()">COPY</button>
+                    </div>
+                    <div style="font-size: 10px; color: #666; margin-top: 8px; line-height: 1.3;">
+                        Отправь эту ссылку другу. Если он перейдет по ней и зайдет в приложение впервые, ты получишь <b>10 рублей</b> на баланс.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon">🤝</div>
+                    <div class="info-text">
+                        Реферальная система работает автоматически. Деньги начисляются сразу после регистрации друга.
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-upgrade" class="section">
+                 <div class="hero-section small">
                     <h1>Апгрейд</h1>
                     <p>Повышай ставки</p>
                 </div>
@@ -256,6 +312,10 @@
         <button class="nav-item" onclick="switchTab('upgrade')">
             <div class="nav-icon">⚡️</div>
             <span>Апгрейд</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('referral')">
+            <div class="nav-icon">👥</div>
+            <span>Инвайт</span>
         </button>
         <button class="nav-item" onclick="switchTab('contract')">
             <div class="nav-icon">📜</div>
